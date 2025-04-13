@@ -30,17 +30,17 @@ export const usersTable = pgTable(
   'users',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    email: varchar('email', { length: 255 }).notNull(),
-    password_hash: varchar('password_hash', { length: 255 }).notNull(),
-    first_name: varchar('first_name', { length: 255 }).notNull(),
-    last_name: varchar('last_name', { length: 255 }).notNull(),
-    phone_number: varchar('phone_number', { length: 10 }).notNull(),
+    email: varchar('email', { length: 255 }).notNull().unique(),
+    passwordHash: varchar('password_hash', { length: 255 }).notNull(),
+    firstName: varchar('first_name', { length: 255 }).notNull(),
+    lastName: varchar('last_name', { length: 255 }).notNull(),
+    phoneNumber: varchar('phone_number', { length: 10 }).notNull(),
     role: userRole('role').notNull().default('student'),
     ...timestamps,
   },
   (table) => [
     index('users_email_idx').on(table.email),
-    index('users_phone_number_idx').on(table.phone_number),
+    index('users_phone_number_idx').on(table.phoneNumber),
   ],
 );
 
@@ -49,9 +49,9 @@ export const addressTable = pgTable('addresses', {
   street: varchar('street', { length: 255 }).notNull(),
   city: varchar('city', { length: 255 }).notNull(),
   state: varchar('state', { length: 255 }).notNull(),
-  zip_code: varchar('zip_code', { length: 7 }).notNull(),
-  user_id: uuid('user_id')
-    .references(() => usersTable.id)
+  zipCode: varchar('zip_code', { length: 7 }).notNull(),
+  userId: uuid('user_id')
+    .references(() => usersTable.id, { onDelete: 'cascade' })
     .notNull(),
   ...timestamps,
 });
@@ -60,13 +60,13 @@ export const adminsTable = pgTable(
   'admins',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    employee_id: varchar('employee_id', { length: 255 }).notNull(),
-    user_id: uuid('user_id')
-      .references(() => usersTable.id)
+    employeeId: varchar('employee_id', { length: 255 }).notNull(),
+    userId: uuid('user_id')
+      .references(() => usersTable.id, { onDelete: 'cascade' })
       .notNull(),
     ...timestamps,
   },
-  (table) => [index('admins_employee_id_idx').on(table.employee_id)],
+  (table) => [index('admins_employee_id_idx').on(table.employeeId)],
 );
 
 export const departmentsTable = pgTable(
@@ -84,40 +84,40 @@ export const studentsTable = pgTable(
   'students',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    roll_number: varchar('roll_number', { length: 255 }).notNull(),
-    admission_date: timestamp('admission_date', { mode: 'string' })
+    rollNumber: varchar('roll_number', { length: 255 }).notNull().unique(),
+    admissionDate: timestamp('admission_date', { mode: 'string' })
       .notNull()
       .defaultNow(),
-    department_id: uuid('department_id')
-      .references(() => departmentsTable.id)
+    departmentId: uuid('department_id')
+      .references(() => departmentsTable.id, { onDelete: 'cascade' })
       .notNull(),
-    user_id: uuid('user_id')
-      .references(() => usersTable.id)
+    userId: uuid('user_id')
+      .references(() => usersTable.id, { onDelete: 'cascade' })
       .notNull(),
     ...timestamps,
   },
-  (table) => [index('students_roll_number_idx').on(table.roll_number)],
+  (table) => [index('students_roll_number_idx').on(table.rollNumber)],
 );
 
 export const feesTable = pgTable('fees', {
   id: uuid('id').defaultRandom().primaryKey(),
   amount: decimal('amount', { mode: 'number' }).notNull(),
-  academic_year: integer('academic_year').notNull(),
-  due_date: timestamp('due_date', { mode: 'string' }).notNull(),
-  student_id: uuid('student_id')
-    .references(() => studentsTable.id)
+  academicYear: integer('academic_year').notNull(),
+  dueDate: timestamp('due_date', { mode: 'string' }).notNull(),
+  studentId: uuid('student_id')
+    .references(() => studentsTable.id, { onDelete: 'cascade' })
     .notNull(),
   ...timestamps,
 });
 
 export const feePaymentsTable = pgTable('fee_payments', {
   id: uuid('id').defaultRandom().primaryKey(),
-  fee_id: uuid('fee_id')
-    .references(() => feesTable.id)
+  feeId: uuid('fee_id')
+    .references(() => feesTable.id, { onDelete: 'cascade' })
     .notNull(),
-  amount_paid: decimal('amount_paid', { mode: 'number' }).notNull(),
+  amountPaid: decimal('amount_paid', { mode: 'number' }).notNull(),
   status: paymentStatus('status').notNull().default('unpaid'),
-  payment_date: timestamp('payment_date', { mode: 'string' })
+  paymentDate: timestamp('payment_date', { mode: 'string' })
     .defaultNow()
     .notNull(),
   ...timestamps,

@@ -1,0 +1,1 @@
+ALTER TABLE "students" ADD CONSTRAINT "students_roll_number_unique" UNIQUE("roll_number");
