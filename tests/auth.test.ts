@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 import supertest from 'supertest';
 import app from '../src/app';
-import db from '../src/db';
+import db, { pool } from '../src/db';
 
 const request = supertest(app);
 
@@ -18,6 +18,7 @@ describe('Testing Authentication Routes', () => {
   });
   afterAll(async () => {
     await db.execute(sql`ROLLBACK;`);
+    await pool.end();
   });
 
   describe('Testing Register Route', () => {

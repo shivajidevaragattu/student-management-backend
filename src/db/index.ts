@@ -7,7 +7,7 @@ import { Pool } from 'pg';
 
 const isTest = process.env.NODE_ENV === 'test';
 
-const pool = new Pool({
+export const pool = new Pool({
   connectionString: process.env.DATABASE_URL!,
 });
 
