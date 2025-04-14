@@ -9,6 +9,7 @@ import {
   usersTable,
 } from '../db/schema';
 import jwt from 'jsonwebtoken';
+import { cookieOptions } from '../lib/constants';
 
 export class AuthController {
   static async register(req: Request, res: Response) {
@@ -79,7 +80,7 @@ export class AuthController {
 
       res.status(201).json({
         success: true,
-        message: 'User created successfully',
+        message: 'User registration successful',
       });
     } catch (error) {
       res.status(500).json({
@@ -132,10 +133,10 @@ export class AuthController {
         process.env.JWT_SECRET!,
       );
 
+      res.cookie('token', token, cookieOptions);
       res.status(200).json({
         success: true,
-        message: 'Login successful',
-        token,
+        message: 'User login successful',
       });
     } catch (error) {
       res.status(500).json({
